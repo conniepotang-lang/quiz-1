@@ -3,11 +3,12 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>选择题练习</title>
+<title>監獄書信II 選擇題練習</title>
 <style>
 *{box-sizing:border-box;font-family:system-ui,-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Helvetica,Arial,sans-serif;}
 body{max-width:620px;margin:30px auto;padding:0 16px;background:#f7f9fc;}
 .container{background:#fff;padding:24px;border-radius:14px;box-shadow:0 2px 10px #00000015;}
+.page-title{text-align:center;font-size:24px;font-weight:bold;margin:0 0 20px 0;color:#1e293b;}
 .q-index{color:#666;margin-bottom:8px;}
 .question{font-size:20px;margin-bottom:8px;line-height:1.6;}
 .tag-multi{display:inline-block;background:#ff9500;color:#fff;font-size:14px;padding:2px 8px;border-radius:6px;margin-bottom:14px;}
@@ -17,17 +18,16 @@ body{max-width:620px;margin:30px auto;padding:0 16px;background:#f7f9fc;}
 .option.disabled{pointer-events:none;opacity:0.85;}
 .option-right{background:#bbf7d0;border-color:#22c55e;}
 .option-wrong{background:#fecaca;border-color:#ef4444;}
-
 .result{margin-top:20px;font-size:19px;font-weight:bold;}
 .correct-text{color:#009933;}
 .wrong-text{color:#d62828;}
 .answer-box{margin-top:10px;font-size:17px;color:#333;}
+.explain-box{margin-top:10px;font-size:16px;color:#444;background:#f1f5f9;padding:12px;border-radius:8px;}
 .btn-row{margin-top:24px;display:flex;gap:12px;justify-content:flex-end;flex-wrap:wrap;}
 #submitBtn{padding:12px 20px;font-size:17px;border:none;background:#f97316;color:#fff;border-radius:10px;cursor:pointer;}
 #submitBtn:disabled{background:#fdba74;cursor:not-allowed;}
 #nextBtn{padding:12px 24px;font-size:17px;border:none;background:#2563eb;color:#fff;border-radius:10px;cursor:pointer;}
 #nextBtn:disabled{background:#94a3b8;cursor:not-allowed;}
-
 #quizPage{}
 #scorePage{display:none;text-align:center;}
 #scorePage h2{margin-top:0;}
@@ -37,6 +37,7 @@ body{max-width:620px;margin:30px auto;padding:0 16px;background:#f7f9fc;}
 </head>
 <body>
 <div class="container">
+  <h1 class="page-title">監獄書信 II</h1>
   <div id="quizPage">
     <div class="q-index" id="qIndex"></div>
     <div class="question" id="qText"></div>
@@ -44,22 +45,21 @@ body{max-width:620px;margin:30px auto;padding:0 16px;background:#f7f9fc;}
     <div id="optWrap"></div>
     <div class="result" id="resText"></div>
     <div class="answer-box" id="ansBox"></div>
+    <div class="explain-box" id="expBox"></div>
     <div class="btn-row">
       <button id="submitBtn" style="display:none;" disabled>提交答案</button>
       <button id="nextBtn" disabled>下一题</button>
     </div>
   </div>
-
   <div id="scorePage">
-    <h2>📋 测验成绩单</h2>
+    <h2>📋 測驗成績單</h2>
     <div class="score-item" id="totalCount"></div>
     <div class="score-item" id="rightCount"></div>
     <div class="score-item" id="wrongCount"></div>
     <div class="score-item" id="scoreText"></div>
-    <button id="restartBtn">重新开始</button>
+    <button id="restartBtn">重新開始</button>
   </div>
 </div>
-
 <script>
 const qIndexEl = document.getElementById("qIndex");
 const qEl = document.getElementById("qText");
@@ -67,9 +67,9 @@ const multiTagEl = document.getElementById("multiTag");
 const optEl = document.getElementById("optWrap");
 const resEl = document.getElementById("resText");
 const ansEl = document.getElementById("ansBox");
+const expEl = document.getElementById("expBox");
 const submitBtn = document.getElementById("submitBtn");
 const nextBtn = document.getElementById("nextBtn");
-
 const quizPage = document.getElementById("quizPage");
 const scorePage = document.getElementById("scorePage");
 const totalCountEl = document.getElementById("totalCount");
@@ -77,19 +77,63 @@ const rightCountEl = document.getElementById("rightCount");
 const wrongCountEl = document.getElementById("wrongCount");
 const scoreTextEl = document.getElementById("scoreText");
 const restartBtn = document.getElementById("restartBtn");
-
-const PICK_COUNT = 20;
-
-// ============题库编辑区============
+const PICK_COUNT = 50;
+// ============題庫編輯區============
 const questionBank = [
- {question:"單選：以弗所書作者是誰？",options:["彼得","保羅","提犘太","約翰"],correct:"保羅"},
- {question:"多選：哪些書卷不是監獄書信?",options:["以弗所書","雅各書","猶大書","加拉太書"],correct:["雅各書","猶大書","加拉太書"],isMultiple:true},
- {question:"單選：腓立比書寫作日期",options:["約主後50-52年","約主後56-58年","約主後60-62年","約主後70-72年"],correct:"約主後60-62年"},
- {question:"單選：一鑰語，在腓立比書四章中都出現過？",options:["復活","得勝","世俗中","在主裡"],correct:"在主裡"}
+ {question:"單選：歌羅西書作者是誰？",options:["彼得","保羅","提犘太","約翰"],correct:"保羅",explain:"歌羅西書是保羅的監獄書信之一，寫於羅馬監牢。"},
+ {question:"單選：歌羅西書 1:2保羅如何稱呼歌羅西的信徒？",options:["使徒","聖徒","門徒","信徒"],correct:"聖徒",explain:"聖徒是一切信耶穌基督的人的身份。"},
+ {question:"多選：歌羅西書 1:4保羅因為聽聞歌羅西信徒有哪些美德而感謝神？",options:["向眾聖徒的愛心","對使徒的信心","對朋友的愛心","在基督耶穌裏的信心"],correct:["向眾聖徒的愛心","在基督耶穌裏的信心"],isMultiple:true,explain:"我們感謝　神。。。因聽見你們在基督耶穌裏的信心、並向眾聖徒的愛心。"},
+ {question:"單選：歌羅西書 1:5歌羅西的信徒得著天上的盼望, 是因聽見了甚麼？",options:["民間傳說","從人而來的信息","福音真理的道","異端學說"],correct:"福音真理的道",explain:"是為那給你們存在天上的盼望．這盼望就是你們從前在福音真理的道上所聽見的。"},
+ {question:"單選：歌羅西書 1:23信徒既因基督肉身受死，能與神和好，保羅便勉勸信徒要在所信道上 ________、根基 _________、堅定不移、不至被引動失去福音的盼望。",options:["努力、穩固","用心、穩定","努力、穩定","恆心、穩固"],correct:"恆心、穩固",explain:"只要你們在所信的道上恆心、根基穩固、堅定不移、不至被引動失去〔原文作離開〕福音的盼望。"},
+ {question:"多選：歌羅西書 1:21歌羅西的信徒(代表當時的外邦人)在未接受救恩時是甚麼境況?",options:["與神同行","與神隔絕","與神為敵","與神親近"],correct:["與神隔絕","與神為敵"],isMultiple:true,explain:"你們從前與　神隔絕、因著惡行、心裏與他為敵。"},
+ {question:"多選：哪些書卷不是監獄書信?",options:["以弗所書","雅各書","歌羅西書","加拉太書"],correct:["雅各書","加拉太書"],isMultiple:true,explain:"保羅四卷監獄書信：以弗所書、腓立比書、歌羅西書、腓利門書。雅各書並非保羅書信；加拉太書是保羅早期旅行書信。"},
+ {question:"單選：保羅是甚麼人？",options:["撒都該人","非利士人","法利賽人"],correct:"法利賽人",explain:"保羅出身法利賽人，熟讀舊約律法。"},
+ {question:"單選：保羅四卷監獄書信不包括以下哪一卷？",options:["歌羅西書","腓利門書","帖撒羅尼迦前書","以弗所書"],correct:"帖撒羅尼迦前書",explain:"四卷監獄書信：以弗所、腓立比、歌羅西、腓利門；帖撒羅尼迦前書為旅行時期書信。"},
+ {question:"多選：歌羅西書勸勉信徒要棄絕哪些舊人惡行？",options:["淫亂","惡毒","謊言","忍耐"],correct:["淫亂","惡毒","謊言"],isMultiple:true,explain:"參歌羅西書3章，忍耐是信徒應有的美德，不是要棄絕的惡行。"},
+//11-20
+ {question:"單選：四卷監獄書信中，哪一卷書沒有提到基督的十字架？",options:["腓立比書","歌羅西書","腓利門書","以弗所書"],correct:"腓利門書",explain:"腓利門書主要側重個人人際。"},
+ {question:"單選：保羅寫監獄書信的地點，多數學者認為是哪一座城市的監獄？",options:["以弗所","哥林多","羅馬","該撒利亞"],correct:"羅馬",explain:"主流學者認為四卷監獄書信寫於羅馬監牢，保羅初次在羅馬被囚禁期間。"},
+ {question:"單選：歌羅西書1:20，神藉著基督在十字架上所流的血，叫萬有都與____和好。",options:["人","自己","教會","天使"],correct:"自己",explain:"西1:20，藉祂在十字架上所流的血，叫萬有都與自己和好。"},
+ {question:"單選：歌羅西書2:8，你們要謹慎，恐怕有人用他的____和虛空的妄言，不照著基督，乃照著人世間的遺傳和世上的小學，把你們擄去。",options:["理學","律法","傳統","智慧"],correct:"理學",explain:"西2:8警告防備人間理學(哲學)、異端道理，不要被世俗學說擄去。"},
+ {question:"單選：歌羅西書2:12，你們既受洗與祂一同埋葬，也就在此與祂一同____。",options:["復活","得勝","稱義","成聖"],correct:"復活",explain:"西2:12，受洗與基督同埋葬、同復活。"},
+ {question:"單選：歌羅西書3:1，你們若真與基督一同復活，就當求在____的事。",options:["地上","天上","教會","聖靈"],correct:"天上",explain:"西3:1，與基督復活，就當求天上的事，不要專顧地上的事。"},
+ {question:"單選：歌羅西書3:12，所以你們既是神的選民，就要存憐憫、恩慈、謙虛、溫柔、____的心。",options:["忍耐","熱心","愛心","喜樂"],correct:"忍耐",explain:"西3:12，選民應有的品格，包含忍耐。"},
+ {question:"單選：歌羅西書3:19，你們作丈夫的，要愛你們的妻子，不可____她們。",options:["責打","苦待","責罵","冷待"],correct:"苦待",explain:"歌羅西書3:19，丈夫要愛妻子，不可苦待她們。"},
+ {question:"單選：歌羅西書4:6，你們的言語要常常帶著____，好像用鹽調和，就可知道該怎樣回答各人。",options:["恩慈","智慧","和氣","溫柔"],correct:"和氣",explain:"西4:6，你們的言語要常常帶著和氣、好像用鹽調和、就可知道該怎樣回答各人。"},
+ {question:"多選：歌羅西書提醒信徒要防備哪些錯誤教導？",options:["人的哲學","世上小學","禮儀節期、月朔、安息日","基督是萬有長子"],correct:["人的哲學","世上小學","禮儀節期、月朔、安息日"],isMultiple:true,explain:"歌羅西教會受異端影響，要防備人間哲學、守舊約節期；基督是萬有長子是真理。"},
+//21-30
+ {question:"多選：歌羅西書3章，新人應有的品格有？",options:["愛心","謙虛","恩慈","驕傲","憐憫"],correct:["愛心","謙虛","恩慈","憐憫"],isMultiple:true,explain:"驕傲屬舊人惡行；愛心、謙虛、恩慈、憐憫是穿上新人的表現。"},
+ {question:"單選：歌羅西書1:1，誰人與保羅一同向歌羅西教會問安？",options:["亞基布","提摩太","路加","底馬"],correct:"提摩太",explain:"西1:1，保羅和提摩太寫信給歌羅西的聖徒。"},
+ {question:"單選：歌羅西書1:2，保羅的問安，願恩惠平安從誰歸與信徒？",options:["神我們的父","眾天使","教會長老","先知"],correct:"神我們的父",explain:"西1:2，願恩惠、平安從神我們的父歸與你們。"},
+ {question:"單選：歌羅西書1:4，保羅聽見歌羅西信徒對誰有愛心？",options:["世上所有人","眾聖徒","外邦人","猶太人"],correct:"眾聖徒",explain:"西1:4，聽見你們在基督耶穌裡的信心，並向眾聖徒的愛心。"},
+ {question:"單選：歌羅西書1:5，在基督耶穌裡的信心，和對眾聖徒的愛心都是因存於天上的甚麼而有？",options:["財寶","盼望","獎賞","榮耀"],correct:"盼望",explain:"西1:5，都是因那為你們存於天上的盼望。"},
+ {question:"單選：歌羅西書1:7，歌羅西信徒從誰學到神的恩典？",options:["亞里達古","以巴弗","推基古","阿尼西母"],correct:"以巴弗",explain:"西1:7，這福音也就是你們從我們親愛的、一同作僕人的以巴弗那裡學到的。"},
+ {question:"單選：歌羅西書2:9，神本性一切的豐盛，怎樣居住在基督裡？",options:["象徵性","有形有體","部份的","短暫的"],correct:"有形有體",explain:"西2:9，因為神本性一切的豐盛，都有形有體地居住在基督裡。"},
+ {question:"單選：歌羅西書2:8，保羅提醒信徒要用甚麼態度防備錯誤教導？",options:["喜樂","懷疑","嘗試","謹慎"],correct:"謹慎",explain:"西2:8，你們要謹慎，免得有人不照著基督，而照著人的傳統，和世俗的言論，藉著哲學和騙人的空談，把你們擄去。。"},
+ {question:"單選：歌羅西書3:1，聖經告訴我們復活的主坐在哪裡 ?",options:["神的左邊","神的右邊","神的前邊","神的後邊"],correct:"神的右邊",explain:"西3:1，所以你們若真與基督一同復活、就當求在上面的事．那裏有基督坐在　神的右邊。"},
+ {question:"單選：歌羅西書3:4，基督是我們的生命，祂顯現的時候，你們也要與祂一同顯現在____裏。",options:["能力","榮耀","權柄","財富"],correct:"榮耀",explain:"西3:4，基督是我們的生命、他顯現的時候、你們也要與他一同顯現在榮耀裏。"},
+//31-40
+ {question:"單選：歌羅西書3:5，保羅勸信徒要治死地上的______ (老我的生命)。",options:["身體","肢體","情緒","慾望"],correct:"肢體",explain:"西3:5，所以要治死你們在地上的肢體．就如淫亂、污穢、邪情、惡慾、和貪婪、貪婪就與拜偶像一樣。"},
+ {question:"多選：歌羅西書3:5，保羅勸信徒要治死地上的肢體(老我的生命), 這包括以下哪些罪?",options:["淫亂","污穢","邪情","貪婪"],correct:["淫亂","污穢","邪情","貪婪"],isMultiple:true,explain:"西3:5，所以要治死你們在地上的肢體．就如淫亂、污穢、邪情、惡慾、和貪婪、貪婪就與拜偶像一樣。"},
+ {question:"多選：歌羅西書2:4，保羅寫信目的之一，要提醒信徒防備人的花言巧語的迷惑及混亂真道，當時迷惑人的包括？",options:["人的遺傳","世上小學","基督的真理","虛空妄言"],correct:["人的遺傳","世上小學","虛空妄言"],isMultiple:true,explain:"西2:4‑8，防備人的遺傳、世上小學、虛空妄言，不要被人擄去。"},
+ {question:"多選：歌羅西書3章，「穿上新人」的表現有？",options:["存憐憫恩慈的心","彼此包容饒恕","謙虛忍耐","驕傲爭競"],correct:["存憐憫恩慈的心","彼此包容饒恕","謙虛忍耐"],isMultiple:true,explain:"西3:12‑14，驕傲爭競是舊人惡行。"},
+ {question:"單選：四卷監獄書信的寫作日期",options:["約主後50-52年","約主後56-58年","約主後60-62年","約主後70-72年"],correct:"約主後60-62年",explain:"四卷監獄書信是保羅在羅馬監獄時期，大約主後60‑62年寫成。"},
+ {question:"單選：歌羅西書3:5，貪婪就與什麼一樣？",options:["驕傲","拜偶像","嫉妒","惱怒"],correct:"拜偶像",explain:"西3:5，貪婪就與拜偶像一樣。"},
+ {question:"單選：歌羅西書1:21，(形容人未信主前的景況)從前你們與神____，因惡行心中與祂為敵。",options:["親近","隔絕","和好","相交"],correct:"隔絕",explain:"西1:21，你們從前與　神隔絕、因著惡行、心裏與他為敵。"},
+ {question:"多選：歌羅西書1:16-17 形容基督是遠超萬有, 因為祂是。。",options:["萬有的創造者","萬有的統治者","萬有的維持者","萬有的跟隨者"],correct:["萬有的創造者","萬有的統治者","萬有的維持者"],isMultiple:true,explain:"西1:16-17 因為萬有都是靠他造的。。。一概都是藉著他造的、又是為他造的．他在萬有之先．萬有也靠他而立。"},
+  {question:"單選：歌羅西書1:12，父神救我們脫離了甚麼？",options:["罪的捆綁","黑暗的權勢","世界的王","肉體情慾"],correct:"黑暗的權勢",explain:"西1:12，他救了我們脫離黑暗的權勢、把我們遷到他愛子的國裏。"},
+ {question:"單選：歌羅西書2:11，甚麼是真正的割禮？",options:["除掉貪心","脫去肉體情慾","身體潔淨","遵守禮儀"],correct:"脫去肉體情慾",explain:"西2:11，你們在他裏面、也受了不是人手所行的割禮、乃是基督使你們脫去肉體情慾的割禮。"},
+//41-50
+ {question:"單選：歌羅西書2:14，基督怎樣處理那寫在律法上攻擊我們的字據？",options:["記錄在案","釘在十字架上","封存","交給天使"],correct:"釘在十字架上",explain:"西2:14，又塗抹了在律例上所寫、攻擊我們有礙於我們的字據、把他撤去、釘在十字架上。"},
+ {question:"單選：歌羅西書1:1，保羅成為基督耶穌使徒的原因？",options:["奉神旨意","自己爭取","眾人選舉","無緣無故"],correct:"奉神旨意",explain:"西1:1，奉　神旨意、作基督耶穌使徒的保羅。"},
+ {question:"多選：歌羅西書1:3-4，保羅為歌羅西信徒感恩, 因為聽見了他們甚麼情況 ?",options:["在基督耶穌裏有信心","有屬靈的恩賜","對聖徒有愛心","有天上的盼望"],correct:["在基督耶穌裏有信心","對聖徒有愛心","有天上的盼望"],isMultiple:true,explain:"西3:3-4，因聽見你們在基督耶穌裏的信心、並向眾聖徒的愛心．是為那給你們存在天上的盼望"},
+ {question:"單選：歌羅西書1:9，保羅為信徒代禱的態度是？",options:["偶爾地","不住地","傷心地","短暫地"],correct:"不住地",explain:"西1:9，因此、我們自從聽見的日子、也就為你們不住的禱告祈求。。。"},
+ {question:"單選：歌羅西書1:18，保羅如何形容基督與教會的關係？他說基督是教會的____",options:["腳","手","心","頭"],correct:"頭",explain:"西1:18，他也是教會全體之首．。。。"},
+ {question:"多選：歌羅西書1:22，從前因為惡行與神為敵，但如今神藉著基督的肉身受死，使人得著甚麼恩典? ",options:["與神和好","得說方言恩賜","成為聖潔","沒有瑕疵","無可責備","可到神面前"],correct:["與神和好","成為聖潔","沒有瑕疵","無可責備","可到神面前"],isMultiple:true,explain:"西1:22，但如今他藉著基督的肉身受死、叫你們與自己和好、都成了聖潔、沒有瑕疵、無可責備、把你們引到自己面前。"},
+ {question:"多選：歌羅西書2:18-19，保羅提醒歌羅西教會要防備異端的虛偽, 這些異端有甚麼特質? ",options:["故意的謙虛","敬拜天使","自高自大","不持定元首","無可責備"],correct:["故意的謙虛","敬拜天使","自高自大","不持定元首"],isMultiple:true,explain:"西2:18-19 不可讓人因著故意謙虛、和敬拜天使、就奪去你們的獎賞．這等人拘泥在所見過的、隨著自己的慾心、無故的自高自大、不持定元首。。。"}
 
 ];
 // =================================
-
 let fullBank = [...questionBank];
 let quizList = [];
 let currentIdx = 0;
@@ -97,7 +141,6 @@ let answered = false;
 let rightNum = 0;
 let wrongNum = 0;
 let selectedMulti = [];
-
 function getRandomQuestions(bank, pickNum){
   if(!Array.isArray(bank) || bank.length === 0) return [];
   const copy = [...bank];
@@ -107,11 +150,10 @@ function getRandomQuestions(bank, pickNum){
   }
   return copy.slice(0, pickNum);
 }
-
 function resetQuiz(){
   quizList = getRandomQuestions(fullBank, PICK_COUNT);
   if(quizList.length === 0){
-    alert("题库为空，请检查 questionBank");
+    alert("題庫為空，請檢查 questionBank");
     return;
   }
   currentIdx = 0;
@@ -122,27 +164,24 @@ function resetQuiz(){
   scorePage.style.display="none";
   renderQuestion();
 }
-
 function renderQuestion(){
   answered = false;
   selectedMulti = [];
   resEl.textContent="";
   ansEl.textContent="";
+  expEl.textContent="";
   submitBtn.style.display="none";
   nextBtn.disabled=true;
   optEl.innerHTML="";
   multiTagEl.innerHTML="";
-
   const item = quizList[currentIdx];
-  qIndexEl.textContent = `题目 ${currentIdx+1} / ${quizList.length}`;
+  qIndexEl.textContent = `題目 ${currentIdx+1} / ${quizList.length}`;
   qEl.textContent = item.question;
-
   if(item.isMultiple){
-    multiTagEl.innerHTML = `<span class="tag-multi">🔘 多选题（需全部选对）</span>`;
+    multiTagEl.innerHTML = `<span class="tag-multi">🔘 多選題（需全部選對）</span>`;
     submitBtn.style.display="inline-block";
     submitBtn.disabled=true;
   }
-
   item.options.forEach(opt=>{
     const div = document.createElement("div");
     div.className="option";
@@ -156,7 +195,13 @@ function renderQuestion(){
     optEl.appendChild(div);
   })
 }
-
+function showExplain(item){
+  if(item.explain){
+    expEl.textContent = `📖解釋：${item.explain}`;
+  }else{
+    expEl.textContent = "";
+  }
+}
 function toggleMulti(dom, value){
   if(answered) return;
   const idx = selectedMulti.indexOf(value);
@@ -169,14 +214,12 @@ function toggleMulti(dom, value){
   }
   submitBtn.disabled = selectedMulti.length === 0;
 }
-
 function checkSingle(userSel, dom){
   if(answered) return;
   answered=true;
   const item = quizList[currentIdx];
   const allOpts = document.querySelectorAll(".option");
   allOpts.forEach(d=>d.classList.add("disabled"));
-
   if(userSel === item.correct){
     resEl.className="result correct-text";
     resEl.textContent="正確🎉";
@@ -194,33 +237,30 @@ function checkSingle(userSel, dom){
     })
     wrongNum++;
   }
+  showExplain(item);
   nextBtn.disabled=false;
 }
-
 submitBtn.onclick = function(){
   if(answered) return;
   answered=true;
   const item = quizList[currentIdx];
   const allOpts = document.querySelectorAll(".option");
   allOpts.forEach(d=>d.classList.add("disabled"));
-
   const correctArr = item.correct;
   const user = [...selectedMulti];
   user.sort();
   const ans = [...correctArr].sort();
   const isOk = JSON.stringify(user) === JSON.stringify(ans);
-
   if(isOk){
     resEl.className="result correct-text";
-    resEl.textContent="正確🎉（全部选对）";
+    resEl.textContent="正確🎉（全部選對）";
     rightNum++;
   }else{
     resEl.className="result wrong-text";
-    resEl.textContent="錯誤❌（需要全部选对）";
+    resEl.textContent="錯誤❌（需要全部選對）";
     ansEl.textContent=`正確答案：${correctArr.join("、")}`;
     wrongNum++;
   }
-
   allOpts.forEach(d=>{
     const v = d.dataset.val;
     if(correctArr.includes(v)){
@@ -230,9 +270,9 @@ submitBtn.onclick = function(){
       d.classList.add("option-wrong");
     }
   })
+  showExplain(item);
   nextBtn.disabled=false;
 }
-
 nextBtn.onclick = ()=>{
   if(currentIdx < quizList.length-1){
     currentIdx++;
@@ -241,18 +281,16 @@ nextBtn.onclick = ()=>{
     showScore();
   }
 }
-
 function showScore(){
   quizPage.style.display="none";
   scorePage.style.display="block";
   const total = quizList.length;
   const score = Math.round((rightNum / total)*100);
-  totalCountEl.textContent = `總题目：${total} 题`;
-  rightCountEl.textContent = `✅答對：${rightNum} 题`;
-  wrongCountEl.textContent = `❌答錯：${wrongNum} 题`;
+  totalCountEl.textContent = `總題目：${total} 題`;
+  rightCountEl.textContent = `✅答對：${rightNum} 題`;
+  wrongCountEl.textContent = `❌答錯：${wrongNum} 題`;
   scoreTextEl.textContent = `得分：${score} / 100 分`;
 }
-
 restartBtn.onclick = resetQuiz;
 resetQuiz();
 </script>
